@@ -83,6 +83,7 @@ public class UserServiceImpl implements UserService {
                 .pageSize(all.getSize())
                 .totalelement(all.getTotalElements())
                 .totalPages(all.getTotalPages())
+                .isLastPage(all.isLast())
                 .build();
         return response;
     }

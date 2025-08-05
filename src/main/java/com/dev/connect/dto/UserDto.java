@@ -1,10 +1,11 @@
 package com.dev.connect.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
 
-import javax.validation.constraints.*;
+
 import java.time.LocalDate;
 
 @Setter

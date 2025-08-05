@@ -3,13 +3,14 @@ package com.dev.connect.Controller;
 import com.dev.connect.ApiResponse.PageableResponse;
 import com.dev.connect.dto.UserDto;
 import com.dev.connect.service.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+
 
 @RestController
 @Slf4j
@@ -34,11 +35,13 @@ public class UserController {
         return new ResponseEntity<>(userService.getById(userId),HttpStatus.FOUND);
     }
     @GetMapping("/getAll")
-    public ResponseEntity<PageableResponse<UserDto>>getAllUser(@RequestParam(defaultValue = "0") int pagenumber
-            , @RequestParam(defaultValue = "10") int pagesize
-            , @RequestParam(defaultValue = "id") String sortby){
+    public ResponseEntity<PageableResponse<UserDto>>getAllUser(
+            @RequestParam(defaultValue = "0",required = false) int pageNumber,
+            @RequestParam(defaultValue = "10",required = false) int pageSize,
+            @RequestParam(defaultValue = "id",required = false) String sortBy
+    ){
 
-        return new ResponseEntity<>(userService.getAll(pagenumber,pagesize,sortby),HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAll(pageNumber,pageSize,sortBy),HttpStatus.OK);
     }
 
 }

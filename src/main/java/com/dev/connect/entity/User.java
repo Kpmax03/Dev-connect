@@ -1,16 +1,19 @@
 package com.dev.connect.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
 @Getter
+@AllArgsConstructor@NoArgsConstructor
 public class User {
     @Id
     @Column(name = "user_id",unique = false,nullable = false)
@@ -36,4 +39,7 @@ public class User {
     @Column(length = 50)
     private String bio;
     private LocalDate createdAt;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Post> post=new ArrayList<>();
 }
