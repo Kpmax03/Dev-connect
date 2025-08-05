@@ -11,16 +11,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<HashMap<String,String>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
         HashMap<String,String> responseError=new HashMap<>();
-        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-        fieldErrors.stream().map(oneerror->responseError.put(oneerror.getField(),oneerror.getDefaultMessage()));
+        ex.getBindingResult().
+                getFieldErrors().
+                forEach(oneFieldError->responseError.put(oneFieldError.getField(), oneFieldError.getDefaultMessage()));
         return new ResponseEntity<>(responseError, HttpStatus.NOT_ACCEPTABLE);
     }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
         ExceptionResponse response=ExceptionResponse.builder()
