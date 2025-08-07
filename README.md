@@ -1,1 +1,1 @@
-in post module users can post jobs,project,internship,etc realted things and can do operation like (create,read,update,search,delete)
+in this update i have separeted dto with request and response for clean code
