@@ -1,7 +1,8 @@
 package com.dev.connect.Controller;
 
 import com.dev.connect.ApiResponse.PageableResponse;
-import com.dev.connect.dto.UserDto;
+import com.dev.connect.RequestDto.UserRequest;
+import com.dev.connect.ResponseDto.UserResponse;
 import com.dev.connect.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -19,23 +20,23 @@ public class UserController {
     @Autowired
     private UserService userService;
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.registerUser(userDto), HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest userRequest){
+        return new ResponseEntity<>(userService.registerUser(userRequest), HttpStatus.CREATED);
     }
     @PutMapping("/update/{userId}")
-    public ResponseEntity<UserDto>updateUser(@PathVariable String userId,@Valid @RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.updateUser(userId,userDto),HttpStatus.ACCEPTED);
+    public ResponseEntity<UserResponse>updateUser(@PathVariable String userId,@Valid @RequestBody UserRequest userRequest){
+        return new ResponseEntity<>(userService.updateUser(userId,userRequest),HttpStatus.ACCEPTED);
     }
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<String>deleteUser(@PathVariable String userId){
         return new ResponseEntity<>(userService.deleteUser(userId),HttpStatus.OK);
     }
     @GetMapping("/byId/{userId}")
-    public ResponseEntity<UserDto>getUserById(@PathVariable String userId){
+    public ResponseEntity<UserResponse>getUserById(@PathVariable String userId){
         return new ResponseEntity<>(userService.getById(userId),HttpStatus.FOUND);
     }
     @GetMapping("/getAll")
-    public ResponseEntity<PageableResponse<UserDto>>getAllUser(
+    public ResponseEntity<PageableResponse<UserResponse>>getAllUser(
             @RequestParam(defaultValue = "0",required = false) int pageNumber,
             @RequestParam(defaultValue = "10",required = false) int pageSize,
             @RequestParam(defaultValue = "id",required = false) String sortBy

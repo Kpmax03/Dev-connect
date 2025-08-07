@@ -1,13 +1,14 @@
 package com.dev.connect.service;
 
 import com.dev.connect.ApiResponse.PageableResponse;
-import com.dev.connect.dto.PostDto;
+import com.dev.connect.RequestDto.PostRequest;
+import com.dev.connect.ResponseDto.PostResponse;
 
 public interface PostService {
-    public PostDto createPost(PostDto postDto);
-    public PostDto editPost(int postId,PostDto postDto);
+    public PostResponse createPost(PostRequest postRequest);
+    public PostResponse editPost(int postId, PostRequest postRequest);
     public String deletePost(int postId);
-    public PageableResponse<PostDto> gettAllPost(int pagenumber,int pagesize,String sortBy);
-    public PageableResponse<PostDto>getAllPostOfUser(String userId,int pageNumber,int pageSize,String sortBy);
-    public PostDto getPostById(int PostId);
+    public PageableResponse<PostResponse> gettAllPost(int pagenumber,int pagesize,String sortBy);
+    public PageableResponse<PostResponse>getAllPostOfUser(String userId,int pageNumber,int pageSize,String sortBy);
+    public PostResponse getPostById(int PostId);
 }

@@ -1,13 +1,13 @@
 package com.dev.connect.service;
 
 import com.dev.connect.ApiResponse.PageableResponse;
-import com.dev.connect.dto.UserDto;
+import com.dev.connect.RequestDto.UserRequest;
+import com.dev.connect.ResponseDto.UserResponse;
 
 public interface UserService {
-    public UserDto registerUser(UserDto userDto);
-    public UserDto updateUser(String id, UserDto userDto);
+    public UserResponse registerUser(UserRequest userRequestDto);
+    public UserResponse updateUser(String id, UserRequest userRequestDto);
     public String deleteUser(String id);
-    public UserDto getById(String id);
-    public PageableResponse<UserDto> getAll(int pageNumber, int pageSize, String sortBy);
-
+    public UserResponse getById(String id);
+    public PageableResponse<UserResponse> getAll(int pageNumber, int pageSize, String sortBy);
 }

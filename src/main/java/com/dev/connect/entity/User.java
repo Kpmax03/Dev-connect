@@ -16,17 +16,8 @@ import java.util.List;
 @AllArgsConstructor@NoArgsConstructor
 public class User {
     @Id
-    @Column(name = "user_id",unique = false,nullable = false)
+    @Column(name = "userId",unique = false,nullable = false)
     private String id;
-
-    @Column(length = 10,nullable = false)
-    private String firstName;
-
-    @Column(length = 25,nullable = true)
-    private String lastName;
-
-    @Column(length = 100)
-    private int age;
 
     @Column(unique = true,nullable = false)
     private String email;
@@ -36,10 +27,15 @@ public class User {
     @Column(length = 15)
     private String role;
 
-    @Column(length = 50)
-    private String bio;
+    @Column(updatable = false)
     private LocalDate createdAt;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private LocalDate updatedAt;
+
+    @OneToOne(orphanRemoval = true,cascade = CascadeType.ALL)
+    @JoinColumn(name="profile_id")
+    private UserProfile userProfile;
+
+    @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Post> post=new ArrayList<>();
 }

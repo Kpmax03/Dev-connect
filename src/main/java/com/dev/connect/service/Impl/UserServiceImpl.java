@@ -1,8 +1,15 @@
 package com.dev.connect.service.Impl;
 
 import com.dev.connect.ApiResponse.PageableResponse;
-import com.dev.connect.dto.UserDto;
+import com.dev.connect.RequestDto.UserProfileRequest;
+import com.dev.connect.RequestDto.UserRequest;
+import com.dev.connect.ResponseDto.ShortPost;
+import com.dev.connect.ResponseDto.UserProfileResponse;
+import com.dev.connect.ResponseDto.UserResponse;
+import com.dev.connect.config.CustomMethods;
+import com.dev.connect.entity.Post;
 import com.dev.connect.entity.User;
+import com.dev.connect.entity.UserProfile;
 import com.dev.connect.exception.ResourceNotFoundException;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.UserService;
@@ -19,73 +26,113 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    UserRepository userRepository;
-
+    private UserRepository userRepository;
     @Autowired
-    ModelMapper mapper;
-
-//    @Autowired
-//    PasswordEncoder passwordEncoder;
-
+    private ModelMapper mapper;
     @Override
-    public UserDto registerUser(UserDto userDto) {
-        userDto.setId(UUID.randomUUID().toString());
-        userDto.setFollowers(0);
-        userDto.setFollowing(0);
-        userDto.setCreatedAt(LocalDate.now());
-        //String password = userDto.getPassword();
-        //userDto.setPassword(passwordEncoder.encode(password));
-        User map = mapper.map(userDto, User.class);
-        return mapper.map(userRepository.save(map),UserDto.class);
+    public UserResponse registerUser(UserRequest userRequest) {
+        UserProfileRequest userProfileRequestDto = userRequest.getUserProfileRequestDto();
+        User user = mapper.map(userRequest, User.class);
+        UserProfile userProfile=mapper.map(userRequest.getUserProfileRequestDto(),UserProfile.class);
+
+        user.setId(UUID.randomUUID().toString());
+        user.setCreatedAt(LocalDate.now());
+        user.setUpdatedAt(LocalDate.now());
+
+        user.setUserProfile(userProfile);
+        userProfile.setUser(user);
+
+        User save = userRepository.save(user);
+
+        UserResponse userResponse = mapper.map(save, UserResponse.class);
+        UserProfileResponse userProfileResponse = mapper.map(save.getUserProfile(), UserProfileResponse.class);
+
+        userResponse.setUserProfileResponseDto(userProfileResponse);
+        return userResponse;
     }
 
     @Override
-    public UserDto updateUser(String id, UserDto userDto) {
-        User byId = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("id not found ."));
-        byId.setFirstName(userDto.getFirstName());
-        byId.setLastName(userDto.getLastName());
-        byId.setAge(userDto.getAge());
-        byId.setEmail(userDto.getEmail());
-        //byId.setPassword(passwordEncoder.encode(userDto.getPassword()));
-      /**/  byId.setPassword(userDto.getPassword());
-        byId.setRole(userDto.getRole());
-        byId.setBio(userDto.getBio());
-        User updated = userRepository.save(byId);
-        return mapper.map(updated,UserDto.class);
+    public UserResponse updateUser(String userId, UserRequest userRequest) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException());
+        UserProfileRequest userProfileRequestDto = userRequest.getUserProfileRequestDto();
+        UserProfile userProfile = mapper.map(userProfileRequestDto, UserProfile.class);
+
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(userRequest.getPassword());
+        user.setRole(userRequest.getRole());
+        user.setUpdatedAt(LocalDate.now());
+        user.setUserProfile(userProfile);
+        userProfile.setUser(user);
+
+        User save = userRepository.save(user);
+        UserProfileResponse userProfileResponse = mapper.map(save.getUserProfile(), UserProfileResponse.class);
+
+        UserResponse userResponse = mapper.map(save, UserResponse.class);
+        userResponse.setUserProfileResponseDto(userProfileResponse);
+
+        List<ShortPost> collect = user.getPost().stream().map(singlePost -> {
+            return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
+        }).collect(Collectors.toUnmodifiableList());
+
+        userResponse.setPosts(collect);
+
+        return userResponse;
     }
 
     @Override
     public String deleteUser(String id) {
-        userRepository.deleteById(id);
-        return "deleted User of id : "+id;
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+        userRepository.delete(user);
+     return "deleted user of id = "+id;
     }
 
     @Override
-    public UserDto getById(String id) {
-        return mapper.map(userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("user id not found")),UserDto.class);
+    public UserResponse getById(String id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
+        UserProfile userProfile = user.getUserProfile();
+
+        UserProfileResponse userProfileResponse = mapper.map(userProfile, UserProfileResponse.class);
+        UserResponse userResponse = mapper.map(user, UserResponse.class);
+
+        userResponse.setUserProfileResponseDto(userProfileResponse);
+
+        List<ShortPost> collect = user.getPost().stream().map(singlePost -> {
+            return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
+        }).collect(Collectors.toUnmodifiableList());
+
+        userResponse.setPosts(collect);
+
+        return userResponse;
     }
 
     @Override
-    public PageableResponse<UserDto> getAll(int pageNumber, int pageSize, String sortBy) {
-        Sort sort= Sort.by(sortBy);
-        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
-        Page<User> all = userRepository.findAll(pageable);
-        List<User> allUser=all.getContent();
-        List<UserDto> collect = allUser.stream().map(oneuser -> {
-            return mapper.map(oneuser, UserDto.class);
+    public PageableResponse<UserResponse> getAll(int pageNumber, int pageSize, String sortBy) {
+        Pageable pageable= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
+
+        Page<User> page = userRepository.findAll(pageable);
+
+        List<UserResponse> collect = page.stream().map(oneUser -> {
+            UserProfile userProfile = oneUser.getUserProfile();
+
+            UserResponse userResponse = mapper.map(oneUser, UserResponse.class);
+            UserProfileResponse userProfileResponse = mapper.map(userProfile, UserProfileResponse.class);
+
+            userResponse.setUserProfileResponseDto(userProfileResponse);
+        List<ShortPost> shortPostList = oneUser.getPost().stream().map(singlePost -> {
+            return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
+        }).collect(Collectors.toUnmodifiableList());
+
+        userResponse.setPosts(shortPostList);
+            return userResponse;
         }).collect(Collectors.toList());
-        PageableResponse response=PageableResponse.<UserDto>builder()
-                .content(collect)
-                .pageNumber(all.getNumber())
-                .pageSize(all.getSize())
-                .totalelement(all.getTotalElements())
-                .totalPages(all.getTotalPages())
-                .isLastPage(all.isLast())
-                .build();
-        return response;
+
+        PageableResponse<UserResponse> pageableResponse = CustomMethods.getPageableReponse(collect,page);
+
+        return pageableResponse;
     }
 }
-
