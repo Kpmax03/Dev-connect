@@ -25,13 +25,18 @@ public class GlobalException {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
+    public ResponseEntity<ExceptionResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
         ExceptionResponse response=ExceptionResponse.builder()
                 .message(ex.getMessage())
                 .status("failed")
                 .datetime(LocalDateTime.now())
                 .build();
 
-        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(InvalidCradentialException.class)
+    public ResponseEntity<ExceptionResponse> invalidCradentialExceptionHandler(InvalidCradentialException ex){
+        ExceptionResponse response= ExceptionResponse.builder().message(ex.getMessage()).status("not authorized").datetime(LocalDateTime.now()).build();
+        return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
     }
 }

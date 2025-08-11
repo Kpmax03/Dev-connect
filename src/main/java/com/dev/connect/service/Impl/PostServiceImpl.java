@@ -6,6 +6,7 @@ import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.config.CustomMethods;
 import com.dev.connect.entity.Post;
 import com.dev.connect.entity.User;
+import com.dev.connect.exception.InvalidCradentialException;
 import com.dev.connect.exception.ResourceNotFoundException;
 import com.dev.connect.repository.PostRepository;
 import com.dev.connect.repository.UserRepository;
@@ -20,24 +21,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
      @Autowired
      private PostRepository postRepository;
+
      @Autowired
      private UserRepository userRepository;
+
      @Autowired
      private ModelMapper mapper;
-    @Override
-    public PostResponse createPost(PostRequest postRequest) {
-        String userId = postRequest.getUserId();
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException());
+    @Override
+    public PostResponse createPost(PostRequest postRequest,Principal principal) {
+        String principalName = principal.getName();
+        User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
+
         Post post=Post.builder().title(postRequest.getTitle()).type(postRequest.getType()).content(postRequest.getContent()).build();
 
         post.setUser(user);
@@ -51,35 +57,44 @@ public class PostServiceImpl implements PostService {
 
         PostResponse postResponse = mapper.map(save, PostResponse.class);
 
-        postResponse.setUserId(userId);
+        postResponse.setUserId(user.getId());
 
         return postResponse;
     }
 
     @Override
-    public PostResponse editPost(int postId, PostRequest postRequest) {
+    public PostResponse editPost(int postId,PostRequest postRequest, Principal principal) {
+        String name = principal.getName();
+        User principleUser = userRepository.findByEmail(name).orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("postid not found"));
-        String userId=postRequest.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user not found"));
+        if(!post.getUser().getId().equals(principleUser.getId()))
+            throw new InvalidCradentialException("access denied for updating others post");
 
-        post.setType(postRequest.getType());
-        post.setTitle(postRequest.getTitle());
-        post.setContent(postRequest.getContent());
-        post.setUpdatedAt(LocalDate.now());
 
-        userRepository.save(user);
-        Post save = postRepository.save(post);
+            post.setType(postRequest.getType());
+            post.setTitle(postRequest.getTitle());
+            post.setContent(postRequest.getContent());
+            post.setUpdatedAt(LocalDate.now());
 
-        PostResponse postResponse = mapper.map(save, PostResponse.class);
+            userRepository.save(principleUser);
+            Post save = postRepository.save(post);
 
-        postResponse.setUserId(userId);
+            PostResponse postResponse = mapper.map(save, PostResponse.class);
+
+            postResponse.setUserId(principleUser.getId());
 
         return postResponse;
     }
 
     @Override
-    public String deletePost(int postId) {
+    public String deletePost(int postId,Principal principal) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("posId not found "));
+        String principalName = principal.getName();
+        User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
+
+        if(post.getUser().getId().equals(user.getId()))
+            throw new InvalidCradentialException("access denied can't delete others post ");
         postRepository.delete(post);
         return "deleted post of id : "+postId;
     }
@@ -117,4 +132,28 @@ public class PostServiceImpl implements PostService {
         postResponse.setUserId(post.getUser().getId());
         return postResponse;
     }
+     //admin only
+    @Override
+    public PostResponse adminEditPost(int postId, PostRequest postRequest) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("post not found"));
+
+        post.setType(postRequest.getType());
+        post.setTitle(postRequest.getTitle());
+        post.setContent(postRequest.getContent());
+        post.setUpdatedAt(LocalDate.now());
+
+        Post save = postRepository.save(post);
+        PostResponse postResponse = mapper.map(save, PostResponse.class);
+        postResponse.setUserId(post.getUser().getId());
+
+        return postResponse;
+    }
+
+    @Override
+    public String adminDeletePost(int postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("post not found"));
+        postRepository.delete(post);
+        return "deleted post from admin postid ="+postId;
+    }
+
 }

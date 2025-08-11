@@ -24,9 +24,6 @@ public class User {
 
     private String password;
 
-    @Column(length = 15)
-    private String role;
-
     @Column(updatable = false)
     private LocalDate createdAt;
 
@@ -36,6 +33,17 @@ public class User {
     @JoinColumn(name="profile_id")
     private UserProfile userProfile;
 
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
+    @JoinTable
+    private List<Role> role=new ArrayList<>();
+
+//    @OneToMany(mappedBy = "follower")
+//    private List<Connection> followerList=new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "following")
+//    private List<Connection> followingList=new ArrayList<>();
+
     @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Post> post=new ArrayList<>();
+
 }

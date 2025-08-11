@@ -16,6 +16,5 @@ public class PostRequest {
     private String title;
     @Size(min = 5,message = "content should be greater then 5 letters")
     private String content;
-    @NotNull
-    private String userId;
+
 }

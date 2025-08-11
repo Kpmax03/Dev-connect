@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 
 
 @RestController
@@ -23,18 +24,20 @@ public class UserController {
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest userRequest){
         return new ResponseEntity<>(userService.registerUser(userRequest), HttpStatus.CREATED);
     }
-    @PutMapping("/update/{userId}")
-    public ResponseEntity<UserResponse>updateUser(@PathVariable String userId,@Valid @RequestBody UserRequest userRequest){
-        return new ResponseEntity<>(userService.updateUser(userId,userRequest),HttpStatus.ACCEPTED);
+    @PutMapping("/update")
+    public ResponseEntity<UserResponse>updateUser(@Valid @RequestBody UserRequest userRequest,Principal principal){
+        return new ResponseEntity<>(userService.updateUser(userRequest,principal),HttpStatus.ACCEPTED);
     }
-    @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<String>deleteUser(@PathVariable String userId){
-        return new ResponseEntity<>(userService.deleteUser(userId),HttpStatus.OK);
+    @DeleteMapping("/delete")
+    public ResponseEntity<String>deleteUser(Principal principal){
+        return new ResponseEntity<>(userService.deleteUser(principal),HttpStatus.OK);
     }
+
     @GetMapping("/byId/{userId}")
     public ResponseEntity<UserResponse>getUserById(@PathVariable String userId){
         return new ResponseEntity<>(userService.getById(userId),HttpStatus.FOUND);
     }
+
     @GetMapping("/getAll")
     public ResponseEntity<PageableResponse<UserResponse>>getAllUser(
             @RequestParam(defaultValue = "0",required = false) int pageNumber,
@@ -43,6 +46,20 @@ public class UserController {
     ){
 
         return new ResponseEntity<>(userService.getAll(pageNumber,pageSize,sortBy),HttpStatus.OK);
+    }
+
+
+
+
+   //admin only
+    @PutMapping("/admin/update/{userId}")
+    public ResponseEntity<UserResponse>adminUpdateUser(@PathVariable String userId,@Valid @RequestBody UserRequest userRequest,Principal principal){
+        return new ResponseEntity<>(userService.adminUpdateUser(userId,userRequest),HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/admin/delete/{userId}")
+    public ResponseEntity<String>adminDeleteUser(@PathVariable String userId,Principal principal){
+        return new ResponseEntity<>(userService.adminDeleteUser(userId),HttpStatus.OK);
     }
 
 }

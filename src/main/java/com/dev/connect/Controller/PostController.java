@@ -9,22 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/post")
 public class PostController {
     @Autowired
     private PostService postService;
     @PostMapping("/create")
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest postRequest){
-            return new ResponseEntity<>(postService.createPost(postRequest), HttpStatus.CREATED);
-    }
-    @PutMapping("/edit/{postId}")
-    public ResponseEntity<PostResponse> editPost(@PathVariable int postId ,@RequestBody PostRequest postRequest){
-            return new ResponseEntity<>(postService.editPost(postId,postRequest),HttpStatus.ACCEPTED);
-    }
-    @DeleteMapping("delete/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable int postId){
-            return new ResponseEntity<>(postService.deletePost(postId),HttpStatus.OK);
+    public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest postRequest,Principal principal){
+            return new ResponseEntity<>(postService.createPost(postRequest,principal), HttpStatus.CREATED);
     }
     @GetMapping("/getAllPost")
     public ResponseEntity<PageableResponse<PostResponse>> getAllPost(
@@ -49,5 +43,18 @@ public class PostController {
     public ResponseEntity<PostResponse>getPostById(@PathVariable(name = "postId") int postId){
 
           return new ResponseEntity<>(postService.getPostById(postId),HttpStatus.FOUND);
+    }
+
+
+
+
+    //admin only
+    @PutMapping("/admin/edit/{postId}")
+    public ResponseEntity<PostResponse> editPost(@PathVariable int postId ,@RequestBody PostRequest postRequest,Principal principal){
+            return new ResponseEntity<>(postService.adminEditPost(postId,postRequest),HttpStatus.ACCEPTED);
+    }
+    @DeleteMapping("/admin/delete/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable int postId, Principal principal){
+            return new ResponseEntity<>(postService.adminDeletePost(postId),HttpStatus.OK);
     }
 }

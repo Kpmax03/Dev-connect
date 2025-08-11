@@ -3,12 +3,9 @@ package com.dev.connect.RequestDto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter@Setter@AllArgsConstructor@NoArgsConstructor
+@Getter@Setter@AllArgsConstructor@NoArgsConstructor@ToString
 public class UserProfileRequest {
     @Size(min = 2,max = 10,message = "name should be greater than 2 or smaller than 11")
     private String firstName;
