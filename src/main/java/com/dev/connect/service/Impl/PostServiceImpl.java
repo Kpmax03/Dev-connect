@@ -67,7 +67,6 @@ public class PostServiceImpl implements PostService {
         if(!post.getUser().getId().equals(principleUser.getId()))
             throw new InvalidCradentialException("access denied for updating others post");
 
-
             post.setType(postRequest.getType());
             post.setTitle(postRequest.getTitle());
             post.setContent(postRequest.getContent());

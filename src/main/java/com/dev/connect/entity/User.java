@@ -46,4 +46,7 @@ public class User {
     @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Post> post=new ArrayList<>();
 
+    @OneToMany(mappedBy = "user",orphanRemoval = true)
+    private List<Comment> comments=new ArrayList<>();
+
 }
