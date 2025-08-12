@@ -1,17 +1,14 @@
 package com.dev.connect.exception;
 
-import com.dev.connect.ApiResponse.ExceptionResponse;
+import com.dev.connect.apiResponse.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalException {
@@ -38,5 +35,10 @@ public class GlobalException {
     public ResponseEntity<ExceptionResponse> invalidCradentialExceptionHandler(InvalidCradentialException ex){
         ExceptionResponse response= ExceptionResponse.builder().message(ex.getMessage()).status("not authorized").datetime(LocalDateTime.now()).build();
         return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(IllegalOperationException.class)
+    public ResponseEntity<ExceptionResponse> illegalOperationExceptionHandler(IllegalOperationException ex){
+        ExceptionResponse response= ExceptionResponse.builder().message(ex.getMessage()).status("access dnied").datetime(LocalDateTime.now()).build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
     }
 }

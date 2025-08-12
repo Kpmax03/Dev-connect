@@ -1,19 +1,16 @@
 package com.dev.connect.service.Impl;
 
-import com.dev.connect.ApiResponse.PageableResponse;
+import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.UserProfileRequest;
 import com.dev.connect.RequestDto.UserRequest;
-import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.ResponseDto.ShortPost;
 import com.dev.connect.ResponseDto.UserProfileResponse;
 import com.dev.connect.ResponseDto.UserResponse;
 import com.dev.connect.config.CustomMethods;
-import com.dev.connect.dto.RoleDto;
-import com.dev.connect.entity.Post;
-import com.dev.connect.entity.Role;
-import com.dev.connect.entity.User;
-import com.dev.connect.entity.UserProfile;
+import com.dev.connect.commonDto.RoleDto;
+import com.dev.connect.entity.*;
 import com.dev.connect.exception.ResourceNotFoundException;
+import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.RoleRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.UserService;
@@ -47,6 +44,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private ConnectionRepository connectionRepository;
+
     @Override
     public UserResponse registerUser(UserRequest userRequest) {
         String password = userRequest.getPassword();
@@ -69,10 +69,13 @@ public class UserServiceImpl implements UserService {
 
         User save = userRepository.save(user);
 
-        UserResponse userResponse = mapper.map(save, UserResponse.class);
-        UserProfileResponse userProfileResponse = mapper.map(save.getUserProfile(), UserProfileResponse.class);
+        Long coutByFollow = connectionRepository.countByFollower(save);
+        Long coutByFollowing = connectionRepository.countByFollowing(save);
+        UserResponse userResponse=CustomMethods.getUserResponse(save);
 
-        userResponse.setUserProfileResponseDto(userProfileResponse);
+        userResponse.setFollower(coutByFollowing);
+        userResponse.setFollowing(coutByFollow);
+
         return userResponse;
     }
 
@@ -96,16 +99,15 @@ public class UserServiceImpl implements UserService {
             userProfile.setUser(user);
 
             User save = userRepository.save(user);
-            UserProfileResponse userProfileResponse = mapper.map(save.getUserProfile(), UserProfileResponse.class);
 
-            UserResponse userResponse = mapper.map(save, UserResponse.class);
-            userResponse.setUserProfileResponseDto(userProfileResponse);
+        Long countByFollower = connectionRepository.countByFollower(save);
+        Long coutByFollowing = connectionRepository.countByFollowing(save);
 
-            List<ShortPost> collect = user.getPost().stream().map(singlePost -> {
-                return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
-            }).collect(Collectors.toUnmodifiableList());
+            UserResponse userResponse =CustomMethods.getUserResponse(save);
 
-            userResponse.setPosts(collect);
+            userResponse.setFollower(coutByFollowing);
+            userResponse.setFollowing(countByFollower);
+
         return userResponse;
         }
 
@@ -121,40 +123,35 @@ public class UserServiceImpl implements UserService {
     public UserResponse getById(String id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("cant find id"));
 
-        UserProfile userProfile = user.getUserProfile();
+        UserResponse userResponse = CustomMethods.getUserResponse(user);
 
-        UserProfileResponse userProfileResponse = mapper.map(userProfile, UserProfileResponse.class);
-        UserResponse userResponse = mapper.map(user, UserResponse.class);
+        Long countByFollower = connectionRepository.countByFollower(user);
+        Long countByFollowing = connectionRepository.countByFollowing(user);
 
-        userResponse.setUserProfileResponseDto(userProfileResponse);
-
-        List<ShortPost> collect = user.getPost().stream().map(singlePost -> {
-            return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
-        }).collect(Collectors.toUnmodifiableList());
-
-        userResponse.setPosts(collect);
+        userResponse.setFollower(countByFollowing);
+        userResponse.setFollowing(countByFollower);
 
         return userResponse;
+
     }
 
     @Override
     public PageableResponse<UserResponse> getAll(int pageNumber, int pageSize, String sortBy) {
+
         Pageable pageable= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
 
         Page<User> page = userRepository.findAll(pageable);
 
         List<UserResponse> collect = page.stream().map(oneUser -> {
-            UserProfile userProfile = oneUser.getUserProfile();
 
-            UserResponse userResponse = mapper.map(oneUser, UserResponse.class);
-            UserProfileResponse userProfileResponse = mapper.map(userProfile, UserProfileResponse.class);
+            UserResponse userResponse = CustomMethods.getUserResponse(oneUser);
 
-            userResponse.setUserProfileResponseDto(userProfileResponse);
-        List<ShortPost> shortPostList = oneUser.getPost().stream().map(singlePost -> {
-            return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
-        }).collect(Collectors.toUnmodifiableList());
+            Long countByFollower = connectionRepository.countByFollower(oneUser);
+            Long countByFollowing = connectionRepository.countByFollowing(oneUser);
 
-        userResponse.setPosts(shortPostList);
+            userResponse.setFollower(countByFollowing);
+            userResponse.setFollowing(countByFollower);
+
             return userResponse;
         }).collect(Collectors.toList());
 
@@ -166,7 +163,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse adminUpdateUser(String userId, UserRequest userRequestDto) {
         UserProfileRequest userProfileRequestDto = userRequestDto.getUserProfileRequestDto();
+
         UserProfile userProfile = mapper.map(userProfileRequestDto, UserProfile.class);
+
         List<Role> collect = userRequestDto.getRoleDtoList().stream().map(oneRole -> {
             return mapper.map(oneRole, Role.class);
         }).collect(Collectors.toList());
@@ -182,24 +181,10 @@ public class UserServiceImpl implements UserService {
 
         User save = userRepository.save(user);
 
-        UserProfile userProfile1 = user.getUserProfile();
-        List<Role> roleList = user.getRole();
-        List<Post> postList = user.getPost();
+        UserResponse userResponse = CustomMethods.getUserResponse(save);
 
-        UserResponse userResponse = mapper.map(save, UserResponse.class);
-        UserProfileResponse userProfileResponse = mapper.map(userProfile1, UserProfileResponse.class);
-
-        List<RoleDto> roleDtoList= roleList.stream().map(singleRole->{
-            return mapper.map(singleRole, RoleDto.class);
-        }).collect(Collectors.toUnmodifiableList());
-
-        List<ShortPost> shortPostList= postList.stream().map(singlePost->{
-            return ShortPost.builder().postId(singlePost.getPostId()).title(singlePost.getTitle()).build();
-        }).collect(Collectors.toList());
-
-        userResponse.setUserProfileResponseDto(userProfileResponse);
-        userResponse.setRole(roleDtoList);
-        userResponse.setPosts(shortPostList);
+        userResponse.setFollower(connectionRepository.countByFollowing(save));
+        userResponse.setFollowing(connectionRepository.countByFollower(save));
 
         return userResponse;
     }

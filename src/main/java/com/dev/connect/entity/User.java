@@ -37,11 +37,11 @@ public class User {
     @JoinTable
     private List<Role> role=new ArrayList<>();
 
-//    @OneToMany(mappedBy = "follower")
-//    private List<Connection> followerList=new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "following")
-//    private List<Connection> followingList=new ArrayList<>();
+    @OneToMany(mappedBy = "following",orphanRemoval = true)
+    private List<Connection> followerList=new ArrayList<>();
+
+    @OneToMany(mappedBy = "follower",orphanRemoval = true)
+    private List<Connection> followingList=new ArrayList<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Post> post=new ArrayList<>();

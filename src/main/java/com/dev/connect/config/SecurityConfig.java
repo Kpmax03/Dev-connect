@@ -14,9 +14,9 @@ public class SecurityConfig {
     public SecurityFilterChain customSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(request->
-                request.requestMatchers("user/admin/**","/post/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/register").permitAll()
-                        .anyRequest().authenticated()
+               request.requestMatchers("/user/admin/**","/post/admin").hasRole("ADMIN")
+                       .requestMatchers("/user/register").permitAll()
+                       .anyRequest().authenticated()
         );
 
         http.httpBasic(Customizer.withDefaults());

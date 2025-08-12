@@ -1,6 +1,6 @@
 package com.dev.connect.service.Impl;
 
-import com.dev.connect.ApiResponse.PageableResponse;
+import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.PostRequest;
 import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.config.CustomMethods;
@@ -11,9 +11,7 @@ import com.dev.connect.exception.ResourceNotFoundException;
 import com.dev.connect.repository.PostRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.PostService;
-import lombok.Setter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

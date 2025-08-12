@@ -1,6 +1,6 @@
 package com.dev.connect.RequestDto;
 
-import com.dev.connect.dto.RoleDto;
+import com.dev.connect.commonDto.RoleDto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -20,4 +20,5 @@ public class UserRequest {
     private String password;
     private List<RoleDto> roleDtoList =new ArrayList<>();
     private UserProfileRequest userProfileRequestDto;
+
 }

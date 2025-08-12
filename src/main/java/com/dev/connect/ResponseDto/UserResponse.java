@@ -1,6 +1,6 @@
 package com.dev.connect.ResponseDto;
 
-import com.dev.connect.dto.RoleDto;
+import com.dev.connect.commonDto.RoleDto;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -11,9 +11,11 @@ public class UserResponse {
     private String id;
     private String email;
     private String password;
-    private UserProfileResponse userProfileResponseDto;
+    private UserProfileResponse userProfileResponse;
     private LocalDate createdAt;
     private LocalDate updatedAt;
+    private Long follower;
+    private Long following;
     private List<RoleDto> role=new ArrayList<>();
-    private List<ShortPost> posts=new ArrayList<>();
+    private List<ShortPost> shortPostList =new ArrayList<>();
 }

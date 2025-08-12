@@ -1,4 +1,4 @@
-package com.dev.connect.ApiResponse;
+package com.dev.connect.apiResponse;
 
 import lombok.Builder;
 import lombok.Getter;

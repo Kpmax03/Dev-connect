@@ -1,6 +1,6 @@
 package com.dev.connect.Controller;
 
-import com.dev.connect.ApiResponse.PageableResponse;
+import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.PostRequest;
 import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.service.PostService;

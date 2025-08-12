@@ -1,4 +1,4 @@
-package com.dev.connect.dto;
+package com.dev.connect.commonDto;
 
 import lombok.*;
 
