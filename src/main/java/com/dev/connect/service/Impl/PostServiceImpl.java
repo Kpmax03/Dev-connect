@@ -9,7 +9,6 @@ import com.dev.connect.entity.User;
 import com.dev.connect.exception.InvalidCradentialException;
 import com.dev.connect.exception.ResourceNotFoundException;
 import com.dev.connect.repository.CommentRepository;
-import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.PostRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.PostService;
@@ -59,7 +58,7 @@ public class PostServiceImpl implements PostService {
 
         PostResponse postResponse = CustomMethods.getPostResponse(save);
 
-        Optional<Long> countByUser = commentRepository.countByUser(user);
+        Optional<Long> countByUser = commentRepository.countByPost(user);
 
         postResponse.setComments(countByUser.get());
 
@@ -85,7 +84,7 @@ public class PostServiceImpl implements PostService {
 
             PostResponse postResponse = CustomMethods.getPostResponse(save);
 
-        Optional<Long> countByUser = commentRepository.countByUser(principleUser);
+        Optional<Long> countByUser = commentRepository.countByPost(principleUser);
 
         return postResponse;
     }
@@ -112,7 +111,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponse> collect = page.stream().map(singlePost -> {
             PostResponse postResponse = CustomMethods.getPostResponse(singlePost);
-            Optional<Long> countByUser = commentRepository.countByUser(singlePost.getUser());
+            Optional<Long> countByUser = commentRepository.countByPost(singlePost.getUser());
             postResponse.setComments(countByUser.get());
             return postResponse;
         }).collect(Collectors.toList());
@@ -131,7 +130,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponse> content = page.getContent().stream().map(singlePost->{
             PostResponse postResponse = CustomMethods.getPostResponse(singlePost);
-            Optional<Long> countByUser = commentRepository.countByUser(singlePost.getUser());
+            Optional<Long> countByUser = commentRepository.countByPost(singlePost.getUser());
             postResponse.setComments(countByUser.get());
             return postResponse;
         }).collect(Collectors.toList());
@@ -145,7 +144,7 @@ public class PostServiceImpl implements PostService {
     public PostResponse getPostById(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("id not found"));
         PostResponse postResponse = CustomMethods.getPostResponse(post);
-        Optional<Long> countByUser = commentRepository.countByUser(post.getUser());
+        Optional<Long> countByUser = commentRepository.countByPost(post.getUser());
 
         return postResponse;
     }
