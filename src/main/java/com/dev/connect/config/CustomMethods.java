@@ -1,10 +1,10 @@
 package com.dev.connect.config;
 
-import com.dev.connect.ResponseDto.ShortPost;
-import com.dev.connect.ResponseDto.UserProfileResponse;
-import com.dev.connect.ResponseDto.UserResponse;
+import com.dev.connect.ResponseDto.*;
 import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.commonDto.RoleDto;
+import com.dev.connect.entity.Comment;
+import com.dev.connect.entity.Post;
 import com.dev.connect.entity.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -47,5 +47,35 @@ public class CustomMethods {
               .role(collect)
               .shortPostList(shortPostList)
               .build();
+  }
+  public static CommentResponse getCommentResponse(Comment comment){
+
+      CommentResponse commentResponse=new CommentResponse();
+      commentResponse.setCommentId(comment.getCommentId());
+      commentResponse.setCommentedAt(comment.getCommentedAt());
+      commentResponse.setContent(comment.getContent());
+      commentResponse.setUserId(comment.getUser().getId());
+      commentResponse.setPostId(comment.getPost().getPostId());
+      return commentResponse;
+  }
+  public static PostResponse getPostResponse(Post post){
+      PostResponse postResponse=new PostResponse();
+      postResponse.setPostId(post.getPostId());
+      postResponse.setType(post.getType());
+      postResponse.setTitle(post.getTitle());
+      postResponse.setContent(post.getContent());
+      postResponse.setCreatedAt(post.getCreatedAt());
+      postResponse.setUpdatedAt(post.getUpdatedAt());
+      postResponse.setUserId(post.getUser().getId());
+      List<Comment> commentList = post.getCommentList();
+
+      List<CommentResponse> collect = commentList.stream().map(single -> {
+          return getCommentResponse(single);
+      }).collect(Collectors.toUnmodifiableList());
+
+      postResponse.setCommentResponseList(collect);
+
+      return  postResponse;
+
   }
 }

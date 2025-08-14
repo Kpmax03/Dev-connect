@@ -1,9 +1,11 @@
 package com.dev.connect.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 @Entity
+@Getter@Setter@AllArgsConstructor@NoArgsConstructor@Builder@ToString
 public class Comment {
     @Id
     private String commentId;
@@ -16,7 +18,7 @@ public class Comment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @ManyToOne()
     @JoinColumn(name = "post_id")
     private Post post;
 }

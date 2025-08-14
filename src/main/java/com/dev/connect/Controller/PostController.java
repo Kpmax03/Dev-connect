@@ -26,7 +26,7 @@ public class PostController {
     }
     @DeleteMapping("/delete/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable int postId, Principal principal){
-        return new ResponseEntity<>(postService.adminDeletePost(postId),HttpStatus.OK);
+        return new ResponseEntity<>(postService.deletePost(postId,principal),HttpStatus.OK);
     }
     @GetMapping("/getAllPost")
     public ResponseEntity<PageableResponse<PostResponse>> getAllPost(

@@ -8,6 +8,8 @@ import com.dev.connect.entity.Post;
 import com.dev.connect.entity.User;
 import com.dev.connect.exception.InvalidCradentialException;
 import com.dev.connect.exception.ResourceNotFoundException;
+import com.dev.connect.repository.CommentRepository;
+import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.PostRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.PostService;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +34,9 @@ public class PostServiceImpl implements PostService {
 
      @Autowired
      private UserRepository userRepository;
+
+     @Autowired
+     private CommentRepository commentRepository;
 
      @Autowired
      private ModelMapper mapper;
@@ -51,9 +57,11 @@ public class PostServiceImpl implements PostService {
         userRepository.save(user);
         Post save = postRepository.save(post);
 
-        PostResponse postResponse = mapper.map(save, PostResponse.class);
+        PostResponse postResponse = CustomMethods.getPostResponse(save);
 
-        postResponse.setUserId(user.getId());
+        Optional<Long> countByUser = commentRepository.countByUser(user);
+
+        postResponse.setComments(countByUser.get());
 
         return postResponse;
     }
@@ -75,9 +83,9 @@ public class PostServiceImpl implements PostService {
             userRepository.save(principleUser);
             Post save = postRepository.save(post);
 
-            PostResponse postResponse = mapper.map(save, PostResponse.class);
+            PostResponse postResponse = CustomMethods.getPostResponse(save);
 
-            postResponse.setUserId(principleUser.getId());
+        Optional<Long> countByUser = commentRepository.countByUser(principleUser);
 
         return postResponse;
     }
@@ -85,10 +93,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public String deletePost(int postId,Principal principal) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("posId not found "));
+
         String principalName = principal.getName();
         User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
 
-        if(post.getUser().getId().equals(user.getId()))
+        if(!post.getUser().getId().equals(user.getId()))
             throw new InvalidCradentialException("access denied can't delete others post ");
         postRepository.delete(post);
         return "deleted post of id : "+postId;
@@ -96,35 +105,48 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageableResponse<PostResponse> gettAllPost(int pagenumber, int pagesize, String sortBy) {
+
         Pageable pageable= PageRequest.of(pagenumber,pagesize, Sort.by(sortBy));
+
         Page<Post> page = postRepository.findAll(pageable);
+
         List<PostResponse> collect = page.stream().map(singlePost -> {
-            PostResponse postResponse = mapper.map(singlePost, PostResponse.class);
-            postResponse.setUserId(singlePost.getUser().getId());
+            PostResponse postResponse = CustomMethods.getPostResponse(singlePost);
+            Optional<Long> countByUser = commentRepository.countByUser(singlePost.getUser());
+            postResponse.setComments(countByUser.get());
             return postResponse;
         }).collect(Collectors.toList());
+
         PageableResponse pageableResponse= CustomMethods.getPageableReponse(collect,page);
+
         return pageableResponse;
     }
 
     @Override
     public PageableResponse<PostResponse> getAllPostOfUser(String userId, int pageNumber, int pageSize, String sortBy) {
+
         Pageable pageable=PageRequest.of(pageNumber,pageSize,Sort.by(sortBy));
+
         Page<Post> page = postRepository.findAllPostByUser(userId,pageable);
+
         List<PostResponse> content = page.getContent().stream().map(singlePost->{
-            PostResponse postResponse = mapper.map(singlePost, PostResponse.class);
-            postResponse.setUserId(singlePost.getUser().getId());
+            PostResponse postResponse = CustomMethods.getPostResponse(singlePost);
+            Optional<Long> countByUser = commentRepository.countByUser(singlePost.getUser());
+            postResponse.setComments(countByUser.get());
             return postResponse;
         }).collect(Collectors.toList());
+
         PageableResponse<PostResponse> pageableReponse = CustomMethods.getPageableReponse(content, page);
+
         return pageableReponse;
     }
 
     @Override
     public PostResponse getPostById(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("id not found"));
-        PostResponse postResponse = mapper.map(post, PostResponse.class);
-        postResponse.setUserId(post.getUser().getId());
+        PostResponse postResponse = CustomMethods.getPostResponse(post);
+        Optional<Long> countByUser = commentRepository.countByUser(post.getUser());
+
         return postResponse;
     }
      //admin only
@@ -138,9 +160,8 @@ public class PostServiceImpl implements PostService {
         post.setUpdatedAt(LocalDate.now());
 
         Post save = postRepository.save(post);
-        PostResponse postResponse = mapper.map(save, PostResponse.class);
-        postResponse.setUserId(post.getUser().getId());
 
+        PostResponse postResponse = CustomMethods.getPostResponse(save);
         return postResponse;
     }
 

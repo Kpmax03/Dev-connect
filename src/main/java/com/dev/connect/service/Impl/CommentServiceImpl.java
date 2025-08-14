@@ -56,21 +56,32 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public String deleteComment(String commentId, Principal principal) {
+
         String principalName = principal.getName();
 
-        User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
-        //only users comment can user delete
-        Optional<Comment> comment = user.getComments().stream().filter(singleComment -> {
+        User selfUser = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
+
+        //only users comment can selfUser delete
+        Optional<Comment> comment = selfUser.getComments().stream().filter(singleComment -> {
             return commentId.equals(singleComment.getCommentId());
         }).findFirst();
-        //if user wants to delete their others comment from his post
+
+        //if selfUser wants to delete their others comment from his post
         Comment comment1 = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException());
-//        comment1.getPost().getUser().getId().equals(user.getId());
-        if(comment.isEmpty() && !comment1.getPost().getUser().getId().equals(user.getId())){
+
+        User ownerOfComment = comment1.getUser();
+
+        Optional<Comment> optionalComment = selfUser.getPost().stream()
+                .flatMap(onePost -> onePost.getCommentList().stream())
+                .filter(oneComment -> oneComment.getUser()
+                        .equals(ownerOfComment))
+                .findFirst();
+
+        if(comment.isEmpty() && optionalComment.isEmpty()){
             throw new InvalidCradentialException("can't delete others comment");
         }else{
-            commentRepository.delete(comment.get());
-            return "deleted comment of content :"+comment.get().getContent();
+           commentRepository.deleteById(commentId);
+            return "deleted successfully comment of content : "+comment1.getContent();
         }
     }
 
