@@ -72,12 +72,6 @@ public class CustomMethods {
 
       List<Comment> commentList = post.getCommentList();
       List<CommentResponse> collect=new ArrayList<>();
-      if(commentList!=null) {
-          collect = commentList.stream().map(single -> {
-              return getCommentResponse(single);
-          }).collect(Collectors.toUnmodifiableList());
-      }
-      postResponse.setCommentResponseList(collect);
 
       return  postResponse;
 

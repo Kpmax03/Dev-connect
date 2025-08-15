@@ -15,5 +15,5 @@ public class PostResponse {
     private LocalDate updatedAt;
     private String userId;
     private Long comments;
-    private List<CommentResponse> commentResponseList;
+
 }
