@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter@Setter@AllArgsConstructor@NoArgsConstructor@ToString@Builder
@@ -14,9 +15,9 @@ public class Message {
     @Id
     private String messageId;
 
+    private String title;
     private String content;
-
-    private LocalDate messegedAt;
+    private LocalDateTime messagedAt;
 
     @ManyToOne()
     @JoinColumn

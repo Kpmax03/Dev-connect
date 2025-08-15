@@ -17,5 +17,5 @@ public class UserResponse {
     private Long follower;
     private Long following;
     private List<RoleDto> role=new ArrayList<>();
-    private List<ShortPost> shortPostList =new ArrayList<>();
+    private List<ShortPostResponse> shortPostResponseList =new ArrayList<>();
 }

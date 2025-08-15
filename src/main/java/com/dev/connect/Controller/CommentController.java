@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
+
     @Autowired
     private CommentService commentService;
 
@@ -22,10 +23,12 @@ public class CommentController {
 
         return new ResponseEntity<>(commentService.createComment(postId,commentRequest,principal), HttpStatus.CREATED);
     }
+
     @DeleteMapping("/delete/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable String commentId,Principal principal){
         return new ResponseEntity<>(commentService.deleteComment(commentId,principal),HttpStatus.ACCEPTED);
     }
+
     @GetMapping("/{postId}")
     public ResponseEntity<List<CommentResponse>> seeCommentsOfSpecificPost(@PathVariable int postId){
         return new ResponseEntity<>(commentService.seeCommentOfSpecificPost(postId),HttpStatus.OK);

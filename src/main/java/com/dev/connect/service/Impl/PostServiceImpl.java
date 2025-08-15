@@ -58,7 +58,7 @@ public class PostServiceImpl implements PostService {
 
         PostResponse postResponse = CustomMethods.getPostResponse(save);
 
-        Optional<Long> countByUser = commentRepository.countByPost(user);
+        Optional<Long> countByUser = commentRepository.countByPost(save);
 
         postResponse.setComments(countByUser.get());
 
@@ -84,7 +84,7 @@ public class PostServiceImpl implements PostService {
 
             PostResponse postResponse = CustomMethods.getPostResponse(save);
 
-        Optional<Long> countByUser = commentRepository.countByPost(principleUser);
+        Optional<Long> countByUser = commentRepository.countByPost(save);
 
         return postResponse;
     }
@@ -111,7 +111,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponse> collect = page.stream().map(singlePost -> {
             PostResponse postResponse = CustomMethods.getPostResponse(singlePost);
-            Optional<Long> countByUser = commentRepository.countByPost(singlePost.getUser());
+            Optional<Long> countByUser = commentRepository.countByPost(singlePost);
             postResponse.setComments(countByUser.get());
             return postResponse;
         }).collect(Collectors.toList());
@@ -130,7 +130,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostResponse> content = page.getContent().stream().map(singlePost->{
             PostResponse postResponse = CustomMethods.getPostResponse(singlePost);
-            Optional<Long> countByUser = commentRepository.countByPost(singlePost.getUser());
+            Optional<Long> countByUser = commentRepository.countByPost(singlePost);
             postResponse.setComments(countByUser.get());
             return postResponse;
         }).collect(Collectors.toList());
@@ -144,7 +144,7 @@ public class PostServiceImpl implements PostService {
     public PostResponse getPostById(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("id not found"));
         PostResponse postResponse = CustomMethods.getPostResponse(post);
-        Optional<Long> countByUser = commentRepository.countByPost(post.getUser());
+        Optional<Long> countByUser = commentRepository.countByPost(post);
 
         return postResponse;
     }

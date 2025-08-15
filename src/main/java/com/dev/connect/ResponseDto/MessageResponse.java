@@ -6,18 +6,21 @@ import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter@Setter@AllArgsConstructor@NoArgsConstructor@Builder@ToString
 public class MessageResponse {
 
     private String messageId;
 
+    private String title;
+
     private String content;
 
-    private LocalDate messegedAt;
+    private LocalDateTime messegedAt;
 
-    private User sender;
+    private String senderId;
 
-    private User receiver;
+    private String receiverId;
 
 }

@@ -6,5 +6,4 @@ import lombok.*;
 public class RoleDto {
     private int roleId;
     private String name;
-
 }

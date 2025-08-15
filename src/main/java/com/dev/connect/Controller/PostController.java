@@ -16,25 +16,37 @@ import java.security.Principal;
 public class PostController {
     @Autowired
     private PostService postService;
+
     @PostMapping("/create")
     public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest postRequest,Principal principal){
+
             return new ResponseEntity<>(postService.createPost(postRequest,principal), HttpStatus.CREATED);
+
     }
+
     @PutMapping("/edit/{postId}")
     public ResponseEntity<PostResponse> editPost(@PathVariable int postId ,@RequestBody PostRequest postRequest,Principal principal){
+
         return new ResponseEntity<>(postService.editPost(postId,postRequest,principal),HttpStatus.ACCEPTED);
+
     }
+
     @DeleteMapping("/delete/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable int postId, Principal principal){
+
         return new ResponseEntity<>(postService.deletePost(postId,principal),HttpStatus.OK);
+
     }
+
     @GetMapping("/getAllPost")
     public ResponseEntity<PageableResponse<PostResponse>> getAllPost(
             @RequestParam(defaultValue = "0",required = false) int pageNumber,
             @RequestParam(defaultValue = "10",required = false) int pageSize,
             @RequestParam(defaultValue = "postId",required = false) String sortBY
     ){
+
             return new ResponseEntity<>(postService.gettAllPost(pageNumber,pageSize,sortBY),HttpStatus.OK);
+
     }
 
     @GetMapping("/getAllPostOfUser/{userId}")

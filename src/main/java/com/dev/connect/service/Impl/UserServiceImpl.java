@@ -3,8 +3,6 @@ package com.dev.connect.service.Impl;
 import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.UserProfileRequest;
 import com.dev.connect.RequestDto.UserRequest;
-import com.dev.connect.ResponseDto.ShortPost;
-import com.dev.connect.ResponseDto.UserProfileResponse;
 import com.dev.connect.ResponseDto.UserResponse;
 import com.dev.connect.config.CustomMethods;
 import com.dev.connect.commonDto.RoleDto;
