@@ -1,6 +1,5 @@
 package com.dev.connect.Controller;
 
-import com.dev.connect.ResponseDto.ConnectionResponse;
 import com.dev.connect.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,6 +45,5 @@ public class ConnectionController {
     public ResponseEntity<Long> getFollowing(@PathVariable(required = false) String userId,Principal principal){
         return new ResponseEntity<>(connectionService.getFollowing(userId,principal),HttpStatus.OK);
     }
-
 
 }
