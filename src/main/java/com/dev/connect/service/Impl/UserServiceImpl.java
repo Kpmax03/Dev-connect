@@ -45,37 +45,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ConnectionRepository connectionRepository;
 
-    @Override
-    public UserResponse registerUser(UserRequest userRequest) {
-        String password = userRequest.getPassword();
-        User user = mapper.map(userRequest, User.class);
-        UserProfile userProfile=mapper.map(userRequest.getUserProfileRequestDto(),UserProfile.class);
-        List<Integer> collect = userRequest.getRoleDtoList().stream().map(singleRole -> {
-            return singleRole.getRoleId();
-        }).collect(Collectors.toList());
 
-        List<Role> roleList = roleRepository.findAllById(collect);
-
-        user.setPassword(passwordEncoder.encode(password));
-        user.setId(UUID.randomUUID().toString());
-        user.setCreatedAt(LocalDate.now());
-        user.setUpdatedAt(LocalDate.now());
-        user.setRole(roleList);
-
-        user.setUserProfile(userProfile);
-        userProfile.setUser(user);
-
-        User save = userRepository.save(user);
-
-        Long coutByFollow = connectionRepository.countByFollower(save);
-        Long coutByFollowing = connectionRepository.countByFollowing(save);
-        UserResponse userResponse=CustomMethods.getUserResponse(save);
-
-        userResponse.setFollower(coutByFollowing);
-        userResponse.setFollowing(coutByFollow);
-
-        return userResponse;
-    }
 
     @Override
     public UserResponse updateUser(UserRequest userRequest,Principal principal) {

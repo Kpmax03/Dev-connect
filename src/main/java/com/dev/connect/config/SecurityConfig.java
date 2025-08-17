@@ -35,6 +35,7 @@ public class SecurityConfig {
                request.requestMatchers("/user/admin/**","/post/admin").hasRole("ADMIN")
                        .requestMatchers("/user/register").permitAll()
                        .requestMatchers("/auth/**").permitAll()
+                       .requestMatchers("/auth/me").authenticated()
                        .requestMatchers(PUBLIC_URL).permitAll()
                        .anyRequest().authenticated()
         );

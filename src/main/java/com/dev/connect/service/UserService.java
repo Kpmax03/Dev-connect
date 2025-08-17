@@ -7,7 +7,7 @@ import com.dev.connect.ResponseDto.UserResponse;
 import java.security.Principal;
 
 public interface UserService {
-    public UserResponse registerUser(UserRequest userRequestDto);
+
     public UserResponse updateUser( UserRequest userRequestDto, Principal principal);
     public String deleteUser(Principal principal);
     public UserResponse getById(String id);

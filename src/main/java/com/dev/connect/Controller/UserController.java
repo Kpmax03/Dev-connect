@@ -20,10 +20,7 @@ import java.security.Principal;
 public class UserController {
     @Autowired
     private UserService userService;
-    @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest userRequest){
-        return new ResponseEntity<>(userService.registerUser(userRequest), HttpStatus.CREATED);
-    }
+
     @PutMapping("/update")
     public ResponseEntity<UserResponse>updateUser(@Valid @RequestBody UserRequest userRequest,Principal principal){
         return new ResponseEntity<>(userService.updateUser(userRequest,principal),HttpStatus.ACCEPTED);
