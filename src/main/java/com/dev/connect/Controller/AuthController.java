@@ -6,6 +6,8 @@ import com.dev.connect.ResponseDto.JwtResponse;
 import com.dev.connect.ResponseDto.UserResponse;
 import com.dev.connect.entity.User;
 import com.dev.connect.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,12 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/auth")
+
 public class AuthController {
 
     @Autowired
     private AuthService authService;
+
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest jwtRequest){
