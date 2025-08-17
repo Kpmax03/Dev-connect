@@ -4,6 +4,8 @@ import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.PostRequest;
 import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,12 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/post")
+@Tag(name = "post anything here")
 public class PostController {
     @Autowired
     private PostService postService;
 
+    @Operation(summary = "add post ")
     @PostMapping("/create")
     public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest postRequest,Principal principal){
 
@@ -24,6 +28,7 @@ public class PostController {
 
     }
 
+    @Operation(summary = "edit post ")
     @PutMapping("/edit/{postId}")
     public ResponseEntity<PostResponse> editPost(@PathVariable int postId ,@RequestBody PostRequest postRequest,Principal principal){
 
@@ -31,6 +36,7 @@ public class PostController {
 
     }
 
+    @Operation(summary = "delete post")
     @DeleteMapping("/delete/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable int postId, Principal principal){
 
@@ -38,6 +44,7 @@ public class PostController {
 
     }
 
+    @Operation(summary = "get all post")
     @GetMapping("/getAllPost")
     public ResponseEntity<PageableResponse<PostResponse>> getAllPost(
             @RequestParam(defaultValue = "0",required = false) int pageNumber,
@@ -49,6 +56,7 @@ public class PostController {
 
     }
 
+    @Operation(summary = "get all post of specific user")
     @GetMapping("/getAllPostOfUser/{userId}")
     public ResponseEntity<PageableResponse<PostResponse>>getAllPostOfUser(
             @PathVariable String userId,
@@ -59,6 +67,7 @@ public class PostController {
             return new ResponseEntity<>(postService.getAllPostOfUser(userId,pageNumber,pageSize,sortBY),HttpStatus.OK);
     }
 
+    @Operation(summary = "get post by their id ")
     @GetMapping("/getPostById/{postId}")
     public ResponseEntity<PostResponse>getPostById(@PathVariable(name = "postId") int postId){
 

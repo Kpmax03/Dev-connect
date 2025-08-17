@@ -4,6 +4,8 @@ import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.UserRequest;
 import com.dev.connect.ResponseDto.UserResponse;
 import com.dev.connect.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,24 +19,29 @@ import java.security.Principal;
 @RestController
 @Slf4j
 @RequestMapping("/user")
+@Tag(name = "operations based on user")
 public class UserController {
     @Autowired
     private UserService userService;
 
     @PutMapping("/update")
+    @Operation(summary = "update user")
     public ResponseEntity<UserResponse>updateUser(@Valid @RequestBody UserRequest userRequest,Principal principal){
         return new ResponseEntity<>(userService.updateUser(userRequest,principal),HttpStatus.ACCEPTED);
     }
+
+    @Operation(summary = "delete user")
     @DeleteMapping("/delete")
     public ResponseEntity<String>deleteUser(Principal principal){
         return new ResponseEntity<>(userService.deleteUser(principal),HttpStatus.OK);
     }
 
+    @Operation(summary = "getuser by their id")
     @GetMapping("/byId/{userId}")
     public ResponseEntity<UserResponse>getUserById(@PathVariable String userId){
         return new ResponseEntity<>(userService.getById(userId),HttpStatus.FOUND);
     }
-
+    @Operation(summary = "get all users")
     @GetMapping("/getAll")
     public ResponseEntity<PageableResponse<UserResponse>>getAllUser(
             @RequestParam(defaultValue = "0",required = false) int pageNumber,

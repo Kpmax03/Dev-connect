@@ -19,23 +19,25 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/auth")
-
+@Tag(name = "get authenticated from here")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
-
+    @Operation(summary = "have already account then login ")
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest jwtRequest){
        return new ResponseEntity<>(authService.login(jwtRequest), HttpStatus.OK);
     }
 
+    @Operation(summary = "new user plz register")
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest userRequest){
         return new ResponseEntity<>(authService.registerUser(userRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "get your current details")
     @GetMapping("/me")
     public ResponseEntity<User> getMyAuth(Principal principal){
         return new ResponseEntity<>(authService.getCurrentUser(principal),HttpStatus.OK);

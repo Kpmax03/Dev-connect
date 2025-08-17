@@ -10,7 +10,9 @@ Dev-Connect is a backend application that enables developers to:
 - Post content
 - Comment on posts
 - Follow and unfollow other users
-- View and interact with connections
+- Send and receive messages
+- Secure endpoints using JWT authentication
+- Explore and test APIs via Swagger/OpenAPI
 
 It’s built as part of a **real-world learning journey** using Spring Boot and REST APIs.
 
@@ -21,41 +23,110 @@ It’s built as part of a **real-world learning journey** using Spring Boot and 
 - **MySQL 8** or **H2** (Hibernate)
 - **Maven**
 - **Lombok** & **ModelMapper** (optional)
+- **JWT** for authentication
+- **Swagger/OpenAPI** for API documentation
 - **Git** for version control
 
 ---
 
 ## 📦 Modules
 
-### 1️⃣ User Module
-- Register a new user
-- Update or delete own profile
-- View other profiles by:
-  - User ID
-  - Username
-  - Pagination & sorting for all users
-- Security ensures users can only modify their own profile
+### 1️⃣ 🔑 Auth Module
+- **Features**
+  - Register user with roles, profile, and encoded password
+  - Login and receive a JWT token
+  - Fetch currently logged-in user
+- **Edge Cases**
+  - Duplicate email/username
+  - Invalid role IDs
+  - Weak or empty password
+  - Wrong credentials / invalid JWT
 
-### 2️⃣ Post Module
-- Create, update, or delete own posts
-- View posts of other users by username
-- Pagination & sorting for posts
-- Each post response also shows **comment count**
+### 2️⃣ 👤 User Module
+- **Features**
+  - Update own profile (email, password, roles, profile info)
+  - Delete own account
+  - View user by ID
+  - View all users with pagination & sorting
+  - Admin: update or delete any user
+- **Edge Cases**
+  - User not found by ID or email
+  - Unauthorized update/delete
+  - Empty/invalid fields on update
+  - Invalid role mapping
+  - Pagination out-of-range
 
-### 3️⃣ Connection (Follow) Module
-- Follow and unfollow other users
-- Cannot follow own account
-- Prevents:
-  - Following an already followed user
-  - Unfollowing a user who is not followed
+### 3️⃣ 📝 Post Module
+- **Features**
+  - Create, edit, and delete own posts
+  - View all posts with pagination & sorting
+  - View all posts by a specific user
+  - Get a single post by ID
+  - Post responses include **comment count**
+  - Admin: edit or delete any post
+- **Edge Cases**
+  - Post not found by ID
+  - Unauthorized edit/delete
+  - Empty/invalid title or content
+  - Pagination out of range
+  - Duplicate/invalid post IDs
 
-### 4️⃣ Comment Module
-- Add comments to any post
-- Delete comment if:
-  - You wrote it, OR
-  - It was written on **your own post**
-- View all comments of a specific post
-- **Admin** can delete any comment
+### 4️⃣ 💬 Comment Module
+- **Features**
+  - Add a comment to any post
+  - Delete a comment if: you wrote it OR it was written on your post
+  - View all comments of a specific post
+  - Admin: delete any comment
+- **Edge Cases**
+  - Post not found by ID
+  - Comment not found by ID
+  - Unauthorized delete
+  - Empty/invalid comment content
+
+### 5️⃣ 🔗 Connection Module
+- **Features**
+  - Follow another user
+  - Unfollow a user
+  - Get follower and following count for any user
+- **Edge Cases**
+  - Cannot follow or unfollow yourself
+  - Already following / not following users
+  - User not found by ID or email
+
+### 6️⃣ 💌 Message Module
+- **Features**
+  - Send messages to another user
+  - View all received messages
+  - View all sent messages
+  - View conversation with a specific user
+  - Delete own messages
+- **Edge Cases**
+  - Receiver or sender not found
+  - Message not found by ID
+  - Unauthorized delete
+  - Empty/invalid message content
+
+### 7️⃣ 🔐 JWT Module
+- **Features**
+  - Generate and validate JWT tokens
+  - Extract username and expiration from token
+  - Filter requests to secure endpoints
+  - Handle unauthorized access
+- **Edge Cases**
+  - Expired tokens
+  - Invalid tokens
+  - Missing/malformed Authorization header
+  - Token username mismatch
+
+### 8️⃣ 📖 Swagger/OpenAPI Module
+- **Features**
+  - Automatically generate API documentation for all endpoints
+  - Interactive Swagger UI for testing APIs
+  - Supports JWT authentication in Swagger
+- **Edge Cases**
+  - API docs not loading if incorrect URL/config
+  - Unauthorized endpoints require JWT
+  - Invalid/missing API input parameters
 
 ---
 
@@ -65,9 +136,3 @@ It’s built as part of a **real-world learning journey** using Spring Boot and 
 - Java 21+
 - Maven 3+
 - MySQL running locally (or H2 for testing)
-
-### Setup & Run
-```bash
-git clone https://github.com/Kpmax03/Dev-connect.git
-cd Dev-connect
-mvn spring-boot:run
