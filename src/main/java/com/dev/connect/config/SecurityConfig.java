@@ -23,6 +23,11 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
+    private String[] PUBLIC_URL={
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
     @Bean
     public SecurityFilterChain customSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
@@ -30,6 +35,7 @@ public class SecurityConfig {
                request.requestMatchers("/user/admin/**","/post/admin").hasRole("ADMIN")
                        .requestMatchers("/user/register").permitAll()
                        .requestMatchers("/auth/**").permitAll()
+                       .requestMatchers(PUBLIC_URL).permitAll()
                        .anyRequest().authenticated()
         );
 

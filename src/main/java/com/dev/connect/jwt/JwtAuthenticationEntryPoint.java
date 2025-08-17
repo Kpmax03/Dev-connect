@@ -19,7 +19,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         String json="for accessing this request user must be authenticated ";
 
-        response.getWriter().write(json);
+        response.getWriter().write(authException.getMessage());
 
     }
 
