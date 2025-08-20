@@ -1,4 +1,4 @@
-package com.dev.connect.service.Impl;
+package com.dev.connect.service.impl;
 
 import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.UserProfileRequest;
@@ -12,6 +12,8 @@ import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.RoleRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.UserService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,10 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
-@Service@Slf4j
+@Service@Slf4j@AllArgsConstructor@NoArgsConstructor
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -49,14 +50,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(UserRequest userRequest,Principal principal) {
+
         String name = principal.getName();
         User user = userRepository.findByEmail(name).orElseThrow(() -> new ResourceNotFoundException());
 
             UserProfileRequest userProfileRequestDto = userRequest.getUserProfileRequestDto();
             UserProfile userProfile = mapper.map(userProfileRequestDto, UserProfile.class);
+
             List<RoleDto> roleDtoList = userRequest.getRoleDtoList();
-            List<Role> roleList = roleDtoList.stream().map(oneRole -> {
-                return mapper.map(oneRole, Role.class);
+            List<Role> roleList = roleDtoList.stream().map(oneRoleDto -> {
+                return mapper.map(oneRoleDto, Role.class);
             }).collect(Collectors.toList());
 
             user.setEmail(userRequest.getEmail());
@@ -89,6 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getById(String id) {
+
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("cant find id"));
 
         UserResponse userResponse = CustomMethods.getUserResponse(user);
@@ -130,6 +134,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse adminUpdateUser(String userId, UserRequest userRequestDto) {
+
         UserProfileRequest userProfileRequestDto = userRequestDto.getUserProfileRequestDto();
 
         UserProfile userProfile = mapper.map(userProfileRequestDto, UserProfile.class);

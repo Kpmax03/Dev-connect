@@ -1,4 +1,4 @@
-package com.dev.connect.service.Impl;
+package com.dev.connect.service.impl;
 
 import com.dev.connect.entity.CustomUserDetail;
 import com.dev.connect.entity.User;

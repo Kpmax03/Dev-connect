@@ -112,21 +112,12 @@ It’s built as part of a **real-world learning journey** using Spring Boot and 
   - Extract username and expiration from token
   - Filter requests to secure endpoints
   - Handle unauthorized access
-- **Edge Cases**
-  - Expired tokens
-  - Invalid tokens
-  - Missing/malformed Authorization header
-  - Token username mismatch
 
 ### 8️⃣ 📖 Swagger/OpenAPI Module
 - **Features**
   - Automatically generate API documentation for all endpoints
   - Interactive Swagger UI for testing APIs
   - Supports JWT authentication in Swagger
-- **Edge Cases**
-  - API docs not loading if incorrect URL/config
-  - Unauthorized endpoints require JWT
-  - Invalid/missing API input parameters
 
 ---
 

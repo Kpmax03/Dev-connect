@@ -1,4 +1,4 @@
-package com.dev.connect.service.Impl;
+package com.dev.connect.service.impl;
 
 import com.dev.connect.RequestDto.CommentRequest;
 import com.dev.connect.ResponseDto.CommentResponse;
@@ -6,7 +6,6 @@ import com.dev.connect.config.CustomMethods;
 import com.dev.connect.entity.Comment;
 import com.dev.connect.entity.Post;
 import com.dev.connect.entity.User;
-import com.dev.connect.exception.IllegalOperationException;
 import com.dev.connect.exception.InvalidCradentialException;
 import com.dev.connect.exception.ResourceNotFoundException;
 import com.dev.connect.repository.CommentRepository;
@@ -14,9 +13,6 @@ import com.dev.connect.repository.PostRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;

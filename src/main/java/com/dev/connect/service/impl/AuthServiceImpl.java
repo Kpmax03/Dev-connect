@@ -1,4 +1,4 @@
-package com.dev.connect.service.Impl;
+package com.dev.connect.service.impl;
 
 import com.dev.connect.RequestDto.JwtRequest;
 import com.dev.connect.RequestDto.UserRequest;
@@ -13,9 +13,10 @@ import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.RoleRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.AuthService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,8 +31,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Service
+@Service@AllArgsConstructor@NoArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -53,17 +55,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    @Override
-    public JwtResponse login(JwtRequest jwtRequest) {
-
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getUserName(), jwtRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-
-        String token = jwtUtil.generateToken(jwtRequest.getUserName());
-        return new JwtResponse(token);
-
-    }
 
     @Override
     public UserResponse registerUser(UserRequest userRequest) {
@@ -98,10 +89,56 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public JwtResponse login(JwtRequest jwtRequest) {
+
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getUserName(), jwtRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        String token = jwtUtil.generateToken(jwtRequest.getUserName());
+        return new JwtResponse(token);
+
+    }
+
+
+    @Override
     public User getCurrentUser(Principal principal) {
         String principalName = principal.getName();
         Optional<User> user = userRepository.findByEmail(principalName);
         return user.get();
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // for testing bcoz of this parameter
+    public AuthServiceImpl(ModelMapper mapper, RoleRepository roleRepository, ConnectionRepository connectionRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.mapper = mapper;
+        this.roleRepository = roleRepository;
+        this.connectionRepository = connectionRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 }

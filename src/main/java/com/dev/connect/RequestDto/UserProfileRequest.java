@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@Getter@Setter@AllArgsConstructor@NoArgsConstructor@ToString
+@Getter@Setter@AllArgsConstructor@NoArgsConstructor@ToString@Builder
 public class UserProfileRequest {
     @Size(min = 2,max = 10,message = "name should be greater than 2 or smaller than 11")
     private String firstName;

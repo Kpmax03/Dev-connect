@@ -27,12 +27,12 @@ public class CustomMethods {
               .build();
   }
   public static UserResponse getUserResponse(User user){
-      ModelMapper mapper1=new ModelMapper();
+      ModelMapper mapper=new ModelMapper();
 
-      UserProfileResponse userProfileResponse = mapper1.map(user.getUserProfile(), UserProfileResponse.class);
+      UserProfileResponse userProfileResponse = mapper.map(user.getUserProfile(), UserProfileResponse.class);
 
       List<RoleDto> collect = user.getRole().stream().map(oneRole -> {
-          return mapper1.map(oneRole, RoleDto.class);
+          return mapper.map(oneRole, RoleDto.class);
       }).collect(Collectors.toList());
 
       List<ShortPostResponse> shortPostResponseList =user.getPost().stream().map(singlePost->{

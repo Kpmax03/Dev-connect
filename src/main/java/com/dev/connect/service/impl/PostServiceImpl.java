@@ -1,4 +1,4 @@
-package com.dev.connect.service.Impl;
+package com.dev.connect.service.impl;
 
 import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.RequestDto.PostRequest;
@@ -12,6 +12,8 @@ import com.dev.connect.repository.CommentRepository;
 import com.dev.connect.repository.PostRepository;
 import com.dev.connect.repository.UserRepository;
 import com.dev.connect.service.PostService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
+@Service@AllArgsConstructor@NoArgsConstructor
 public class PostServiceImpl implements PostService {
      @Autowired
      private PostRepository postRepository;
@@ -45,7 +47,11 @@ public class PostServiceImpl implements PostService {
         String principalName = principal.getName();
         User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
 
-        Post post=Post.builder().title(postRequest.getTitle()).type(postRequest.getType()).content(postRequest.getContent()).build();
+        Post post=Post.builder()
+                .title(postRequest.getTitle())
+                .type(postRequest.getType())
+                .content(postRequest.getContent())
+                .build();
 
         post.setUser(user);
         post.setCreatedAt(LocalDate.now());

@@ -4,6 +4,7 @@ import com.dev.connect.commonDto.RoleDto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,7 +12,7 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter@Setter@ToString
+@Getter@Setter@ToString@Builder
 public class UserRequest {
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",message = "not valid email")
     private String email;

@@ -1,6 +1,5 @@
-package com.dev.connect.service.Impl;
+package com.dev.connect.service.impl;
 
-import com.dev.connect.RequestDto.CommentRequest;
 import com.dev.connect.RequestDto.MessageRequest;
 import com.dev.connect.ResponseDto.MessageResponse;
 import com.dev.connect.ResponseDto.ShortMessageResponse;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
