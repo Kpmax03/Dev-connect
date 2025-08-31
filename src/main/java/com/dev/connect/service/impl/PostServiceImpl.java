@@ -5,6 +5,7 @@ import com.dev.connect.RequestDto.PostRequest;
 import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.config.CustomMethods;
 import com.dev.connect.entity.Post;
+import com.dev.connect.entity.PostType;
 import com.dev.connect.entity.User;
 import com.dev.connect.exception.InvalidCradentialException;
 import com.dev.connect.exception.ResourceNotFoundException;
@@ -20,12 +21,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service@AllArgsConstructor@NoArgsConstructor
@@ -44,14 +47,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse createPost(PostRequest postRequest,Principal principal) {
+
         String principalName = principal.getName();
+        PostType validPostType = CustomMethods.isPostTypeValidOrNot(postRequest.getType());
+        Set<String> filteredTags = CustomMethods.convertTagsToLowerCase(postRequest.getTags());
         User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
 
         Post post=Post.builder()
                 .title(postRequest.getTitle())
-                .type(postRequest.getType())
+                .type(validPostType)
                 .content(postRequest.getContent())
-                .tags(postRequest.getTags())
+                .tags(filteredTags)
                 .build();
 
         post.setUser(user);
@@ -75,16 +81,20 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse editPost(int postId,PostRequest postRequest, Principal principal) {
         String name = principal.getName();
+        PostType validPostType = CustomMethods.isPostTypeValidOrNot(postRequest.getType());
+        Set<String> filteredTags = CustomMethods.convertTagsToLowerCase(postRequest.getTags());
+
         User principleUser = userRepository.findByEmail(name).orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("postid not found"));
+
         if(!post.getUser().getId().equals(principleUser.getId()))
             throw new InvalidCradentialException("access denied for updating others post");
 
-            post.setType(postRequest.getType());
+            post.setType(validPostType);
             post.setTitle(postRequest.getTitle());
             post.setContent(postRequest.getContent());
-            post.setTags(postRequest.getTags());
+            post.setTags(filteredTags);
 
             post.setUpdatedAt(LocalDate.now());
 
@@ -157,12 +167,50 @@ public class PostServiceImpl implements PostService {
 
         return postResponse;
     }
-     //admin only
+
+    //for searching
+    @Override
+    public List<PostResponse> searchPostBySpecificTags(List<String> tags) {
+        List<String> filteredList = tags.stream().map(oneTage -> oneTage.toLowerCase()).collect(Collectors.toList());
+
+        List<Post> result = postRepository.findByTagsIn(filteredList);
+
+        List<PostResponse> postResponseList = result.stream().map(onePost -> CustomMethods.getPostResponse(onePost)).collect(Collectors.toUnmodifiableList());
+        if(!postResponseList.isEmpty()) {
+            return postResponseList;
+        }else {
+            throw new ResourceNotFoundException("post not found with these tags ="+tags);
+        }
+    }
+
+    @Override
+    public List<PostResponse> searchPostByType(String type) {
+
+        PostType validPostType = CustomMethods.isPostTypeValidOrNot(type);
+
+        List<Post> postList = postRepository.findByType(validPostType);
+        List<PostResponse> postResponseList = postList.stream().map(onePost -> CustomMethods.getPostResponse(onePost)).collect(Collectors.toUnmodifiableList());
+
+        return postResponseList;
+    }
+
+    @Override
+    public List<PostResponse> searchPostByTypeAndTags(String type, List<String> tags) {
+        PostType validPostType = CustomMethods.isPostTypeValidOrNot(type);
+        List<Post> postList = postRepository.findByTypeAndTagsIn(validPostType, tags);
+
+        List<PostResponse> postResponseList = postList.stream().map(onePost -> CustomMethods.getPostResponse(onePost)).collect(Collectors.toUnmodifiableList());
+
+        return postResponseList;
+    }
+
+    //admin task only
     @Override
     public PostResponse adminEditPost(int postId, PostRequest postRequest) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("post not found"));
+        PostType validPostType = CustomMethods.isPostTypeValidOrNot(postRequest.getType());
 
-        post.setType(postRequest.getType());
+        post.setType(validPostType);
         post.setTitle(postRequest.getTitle());
         post.setContent(postRequest.getContent());
         post.setUpdatedAt(LocalDate.now());
@@ -175,8 +223,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String adminDeletePost(int postId) {
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("post not found"));
         postRepository.delete(post);
+
         return "deleted post from admin postid ="+postId;
     }
 

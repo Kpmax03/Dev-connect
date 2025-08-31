@@ -33,20 +33,30 @@ public class GlobalException {
     public ResponseEntity<ExceptionResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
         ExceptionResponse response=ExceptionResponse.builder()
                 .message(ex.getMessage())
-                .status("failed")
-                .datetime(LocalDateTime.now())
+                .status("not found ")
+                .datetime(LocalDateTime.now().toString())
                 .build();
 
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(InvalidCradentialException.class)
     public ResponseEntity<ExceptionResponse> invalidCradentialExceptionHandler(InvalidCradentialException ex){
-        ExceptionResponse response= ExceptionResponse.builder().message(ex.getMessage()).status("not authorized").datetime(LocalDateTime.now()).build();
+        ExceptionResponse response= ExceptionResponse.builder()
+                .message(ex.getMessage())
+                .status("not authorized")
+                .datetime(LocalDateTime.now().toString())
+                .build();
+
         return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
     }
+
     @ExceptionHandler(IllegalOperationException.class)
     public ResponseEntity<ExceptionResponse> illegalOperationExceptionHandler(IllegalOperationException ex){
-        ExceptionResponse response= ExceptionResponse.builder().message(ex.getMessage()).status("access dnied").datetime(LocalDateTime.now()).build();
+        ExceptionResponse response= ExceptionResponse.builder()
+                .message(ex.getMessage()).status("access dnied")
+                .datetime(LocalDateTime.now().toString())
+                .build();
         return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
     }
 

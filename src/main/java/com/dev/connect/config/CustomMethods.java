@@ -3,15 +3,16 @@ package com.dev.connect.config;
 import com.dev.connect.ResponseDto.*;
 import com.dev.connect.apiResponse.PageableResponse;
 import com.dev.connect.commonDto.RoleDto;
-import com.dev.connect.entity.Comment;
-import com.dev.connect.entity.Message;
-import com.dev.connect.entity.Post;
-import com.dev.connect.entity.User;
+import com.dev.connect.entity.*;
+import com.dev.connect.exception.IllegalOperationException;
+import com.dev.connect.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CustomMethods {
@@ -75,6 +76,23 @@ public class CustomMethods {
 
       return  postResponse;
 
+  }
+  public static PostType isPostTypeValidOrNot(String type){
+      if(type==null || type.isEmpty()){
+          throw new ResourceNotFoundException("type cant be empty ");
+      }
+      type=type.toUpperCase();
+      try {
+
+      PostType.valueOf(type);
+
+      }catch (IllegalArgumentException ex){
+          throw new HttpMessageNotReadableException("type "+type+" is wrong ");
+      }
+      return PostType.valueOf(type);
+  }
+  public static Set<String> convertTagsToLowerCase(Set<String> tags){
+      return tags.stream().map(oneTag->oneTag.toLowerCase()).collect(Collectors.toSet());
   }
   public static MessageResponse getMessageResponse(Message message){
       return MessageResponse.builder()
