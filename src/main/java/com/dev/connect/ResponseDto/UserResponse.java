@@ -1,6 +1,7 @@
 package com.dev.connect.ResponseDto;
 
 import com.dev.connect.commonDto.RoleDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,10 +13,15 @@ public class UserResponse {
     private String email;
     private String password;
     private UserProfileResponse userProfileResponse;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
     private LocalDate createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
     private LocalDate updatedAt;
+
     private Long follower;
     private Long following;
     private List<RoleDto> role=new ArrayList<>();
     private List<ShortPostResponse> shortPostResponseList =new ArrayList<>();
+    
 }

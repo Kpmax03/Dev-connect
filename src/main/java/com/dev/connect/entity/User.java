@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
-@AllArgsConstructor@NoArgsConstructor@Builder@ToString
+@AllArgsConstructor@NoArgsConstructor@Builder
 public class User {
     @Id
     @Column(name = "userId",unique = false,nullable = false)

@@ -1,5 +1,6 @@
 package com.dev.connect.ResponseDto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 
@@ -10,5 +11,7 @@ public class ShortMessageResponse {
     private String from;
     private String to;
     private String title;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy HH-mm")
     private LocalDateTime time;
 }

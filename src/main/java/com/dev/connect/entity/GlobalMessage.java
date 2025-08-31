@@ -10,7 +10,7 @@ public class GlobalMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int messageId;
+    private long messageId;
 
     private String sender;
     private String content;

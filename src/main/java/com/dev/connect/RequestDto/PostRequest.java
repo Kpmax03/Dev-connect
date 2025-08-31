@@ -1,17 +1,22 @@
 package com.dev.connect.RequestDto;
 
+import com.dev.connect.entity.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter@Setter@AllArgsConstructor@NoArgsConstructor@Builder
 public class PostRequest {
-    private String type;
+    private PostType type;
     @Size(min=4,max=20 ,message = "title must be between 4-20")
     private String title;
     @Size(min = 5,message = "content should be greater then 5 letters")
     private String content;
 
+    private Set<String> tags=new HashSet<>();
 }

@@ -51,6 +51,7 @@ public class PostServiceImpl implements PostService {
                 .title(postRequest.getTitle())
                 .type(postRequest.getType())
                 .content(postRequest.getContent())
+                .tags(postRequest.getTags())
                 .build();
 
         post.setUser(user);
@@ -83,6 +84,8 @@ public class PostServiceImpl implements PostService {
             post.setType(postRequest.getType());
             post.setTitle(postRequest.getTitle());
             post.setContent(postRequest.getContent());
+            post.setTags(postRequest.getTags());
+
             post.setUpdatedAt(LocalDate.now());
 
             userRepository.save(principleUser);

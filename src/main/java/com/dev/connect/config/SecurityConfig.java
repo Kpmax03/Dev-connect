@@ -37,7 +37,7 @@ public class SecurityConfig {
                        .requestMatchers("/auth/**").permitAll()
                        .requestMatchers("/auth/me").authenticated()
                        .requestMatchers(PUBLIC_URL).permitAll()
-                       .anyRequest().authenticated()
+                       .anyRequest().permitAll()
         );
 
 //        http.httpBasic(Customizer.withDefaults());

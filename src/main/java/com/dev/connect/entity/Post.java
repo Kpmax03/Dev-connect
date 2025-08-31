@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "post")
@@ -15,8 +14,8 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int postId;
 
-    @Column(length = 20)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private PostType type;
 
     @Column(length = 25)
     private String title;
@@ -31,6 +30,10 @@ public class Post {
     @ManyToOne()
     @JoinColumn(name="userId")
     private User user;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "post_tags")
+    private Set<String> tags=new HashSet<>();
 
     @OneToMany(mappedBy = "post",orphanRemoval = true)
     private List<Comment> commentList=new ArrayList<>();

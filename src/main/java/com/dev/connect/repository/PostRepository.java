@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query("select p from Post p where p.user.id = :userId ")

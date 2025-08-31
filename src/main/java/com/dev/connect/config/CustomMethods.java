@@ -63,13 +63,13 @@ public class CustomMethods {
   public static PostResponse getPostResponse(Post post){
       PostResponse postResponse=new PostResponse();
       postResponse.setPostId(post.getPostId());
-      postResponse.setType(post.getType());
+      postResponse.setType(post.getType().toString());
       postResponse.setTitle(post.getTitle());
       postResponse.setContent(post.getContent());
       postResponse.setCreatedAt(post.getCreatedAt());
       postResponse.setUpdatedAt(post.getUpdatedAt());
       postResponse.setUserId(post.getUser().getId());
-
+      postResponse.setTags(post.getTags().toString());
       List<Comment> commentList = post.getCommentList();
       List<CommentResponse> collect=new ArrayList<>();
 
@@ -85,5 +85,6 @@ public class CustomMethods {
               .senderId(message.getSender().getId())
               .receiverId(message.getReceiver().getId())
               .build();
+
   }
 }
