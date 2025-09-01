@@ -1,4 +1,4 @@
-package com.dev.connect.entity;
+package com.dev.connect.enums;
 
 public enum PostType {
     INTERNSHIP,

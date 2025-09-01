@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter@Setter@AllArgsConstructor@NoArgsConstructor@ToString@Builder
 public class UserProfileRequest {
     @Size(min = 2,max = 10,message = "name should be greater than 2 or smaller than 11")
@@ -12,6 +15,10 @@ public class UserProfileRequest {
 
     @Size(min = 4,max = 15,message = "lastname should be in between 4 to 15")
     private String lastName;
+
+    private Set<String> domain=new HashSet<>();
+
+    private Set<String> techs =new HashSet<>();
 
     @Min(value = 14,message = "illegle age ! ")
     @Max(value = 60,message = "age is to old for todays generation")

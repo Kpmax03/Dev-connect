@@ -1,5 +1,6 @@
 package com.dev.connect.entity;
 
+import com.dev.connect.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
 

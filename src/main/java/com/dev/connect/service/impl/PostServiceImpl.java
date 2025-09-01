@@ -5,7 +5,7 @@ import com.dev.connect.RequestDto.PostRequest;
 import com.dev.connect.ResponseDto.PostResponse;
 import com.dev.connect.config.CustomMethods;
 import com.dev.connect.entity.Post;
-import com.dev.connect.entity.PostType;
+import com.dev.connect.enums.PostType;
 import com.dev.connect.entity.User;
 import com.dev.connect.exception.InvalidCradentialException;
 import com.dev.connect.exception.ResourceNotFoundException;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -51,6 +50,7 @@ public class PostServiceImpl implements PostService {
         String principalName = principal.getName();
         PostType validPostType = CustomMethods.isPostTypeValidOrNot(postRequest.getType());
         Set<String> filteredTags = CustomMethods.convertTagsToLowerCase(postRequest.getTags());
+
         User user = userRepository.findByEmail(principalName).orElseThrow(() -> new ResourceNotFoundException());
 
         Post post=Post.builder()

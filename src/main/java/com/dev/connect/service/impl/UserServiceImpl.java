@@ -7,7 +7,10 @@ import com.dev.connect.ResponseDto.UserResponse;
 import com.dev.connect.config.CustomMethods;
 import com.dev.connect.commonDto.RoleDto;
 import com.dev.connect.entity.*;
+import com.dev.connect.enums.Domain;
+import com.dev.connect.enums.Techs;
 import com.dev.connect.exception.ResourceNotFoundException;
+import com.dev.connect.exception.WantsToGiveException;
 import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.RoleRepository;
 import com.dev.connect.repository.UserRepository;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -52,10 +56,20 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(UserRequest userRequest,Principal principal) {
 
         String name = principal.getName();
+
+        Set<String> notvalidDomain = userRequest.getUserProfileRequestDto().getDomain();
+        Set<Domain> validDomain = CustomMethods.isDomainValidOrNot(notvalidDomain);
+
+        Set<String> notValidTechs = userRequest.getUserProfileRequestDto().getTechs();
+        Set<Techs> validTechs = CustomMethods.isTechsValidOrNot(notValidTechs);
+
         User user = userRepository.findByEmail(name).orElseThrow(() -> new ResourceNotFoundException());
 
             UserProfileRequest userProfileRequestDto = userRequest.getUserProfileRequestDto();
+
             UserProfile userProfile = mapper.map(userProfileRequestDto, UserProfile.class);
+            userProfile.setDomain(validDomain);
+            userProfile.setTechs(validTechs);
 
             List<RoleDto> roleDtoList = userRequest.getRoleDtoList();
             List<Role> roleList = roleDtoList.stream().map(oneRoleDto -> {
@@ -130,6 +144,63 @@ public class UserServiceImpl implements UserService {
         PageableResponse<UserResponse> pageableResponse = CustomMethods.getPageableReponse(collect,page);
 
         return pageableResponse;
+    }
+    @Override
+    public List<UserResponse> searchUserByDomain(String domain){
+        Domain realDomain;
+        try {
+            realDomain=Domain.valueOf(domain);
+        } catch (IllegalArgumentException e) {
+            throw new WantsToGiveException("domain dosnt exist ");
+        }
+        List<User> userList = userRepository.findByUserProfile_Domain(realDomain);
+
+        List<UserResponse> userResponseList = userList.stream().map(oneUser -> CustomMethods.getUserResponse(oneUser)).collect(Collectors.toUnmodifiableList());
+
+        return userResponseList;
+    }
+    @Override
+    public List<UserResponse> searchUserByTechs(List<String> techs){
+        List<Techs> verifiedTechsList = techs.stream().map(oneTechs -> {
+
+            try {
+                Techs.valueOf(oneTechs.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new WantsToGiveException("tag dosnt exist ");
+            }
+            return Techs.valueOf(oneTechs.toUpperCase());
+        }).collect(Collectors.toUnmodifiableList());
+
+        List<User> userList = userRepository.findByUserProfile_TechsIn(verifiedTechsList);
+        List<UserResponse> userResponseList = userList.stream().map(one -> CustomMethods.getUserResponse(one)).collect(Collectors.toUnmodifiableList());
+
+        return userResponseList;
+    }
+    @Override
+    public List<UserResponse> searchUserByDomainAndTechs(String domain,List<String> techs){
+        // for verifying domain
+        Domain realDomain;
+        try {
+            realDomain=Domain.valueOf(domain);
+        } catch (IllegalArgumentException e) {
+            throw new WantsToGiveException("domain dosnt exist ");
+        }
+        // for verifying techs
+        List<Techs> verifiedTechsList = techs.stream().map(oneTechs -> {
+
+            try {
+                Techs.valueOf(oneTechs.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new WantsToGiveException("tag dosnt exist ");
+            }
+            return Techs.valueOf(oneTechs.toUpperCase());
+        }).collect(Collectors.toUnmodifiableList());
+
+        List<User> userList = userRepository.findByUserProfile_DomainAndUserProfile_TechsIn(realDomain, verifiedTechsList);
+
+        List<UserResponse> userResponseList = userList.stream().map(user -> CustomMethods.getUserResponse(user)).collect(Collectors.toUnmodifiableList());
+        return userResponseList;
+
     }
 
     @Override

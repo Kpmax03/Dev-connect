@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 
 @RestController
@@ -52,10 +53,28 @@ public class UserController {
         return new ResponseEntity<>(userService.getAll(pageNumber,pageSize,sortBy),HttpStatus.OK);
     }
 
+    // searching user from specific tags and domain
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponse>> searchUserByDomainOrTechsOrDomainAndTechs(
+            @RequestParam(required = false) String domain,
+            @RequestParam(required = false) List<String> techs
+    ){
+        // search for only domain not techs
+        if((domain!=null && !domain.isEmpty())&&(techs==null || techs.isEmpty())){
+
+            return ResponseEntity.ok(userService.searchUserByDomain(domain));
+        //search for only techs not domain
+        } else if ((domain == null || domain.isEmpty()) && (techs!=null && !techs.isEmpty())) {
+
+            return ResponseEntity.ok(userService.searchUserByTechs(techs));
+        // search for domain also and techs also
+        }else {
+            return ResponseEntity.ok(userService.searchUserByDomainAndTechs(domain,techs));
+        }
+    }
 
 
-
-   //admin only
+   // admin only
     @PutMapping("/admin/update/{userId}")
     public ResponseEntity<UserResponse>adminUpdateUser(@PathVariable String userId,@Valid @RequestBody UserRequest userRequest,Principal principal){
         return new ResponseEntity<>(userService.adminUpdateUser(userId,userRequest),HttpStatus.ACCEPTED);

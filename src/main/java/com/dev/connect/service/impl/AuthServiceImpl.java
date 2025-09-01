@@ -8,6 +8,8 @@ import com.dev.connect.config.CustomMethods;
 import com.dev.connect.entity.Role;
 import com.dev.connect.entity.User;
 import com.dev.connect.entity.UserProfile;
+import com.dev.connect.enums.Domain;
+import com.dev.connect.enums.Techs;
 import com.dev.connect.jwt.JwtUtil;
 import com.dev.connect.repository.ConnectionRepository;
 import com.dev.connect.repository.RoleRepository;
@@ -28,6 +30,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -58,9 +61,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserResponse registerUser(UserRequest userRequest) {
+
         String password = userRequest.getPassword();
+        Set<Techs> validTechs = CustomMethods.isTechsValidOrNot(userRequest.getUserProfileRequestDto().getTechs());
+        Set<Domain> validDomains = CustomMethods.isDomainValidOrNot(userRequest.getUserProfileRequestDto().getDomain());
+
         User user = mapper.map(userRequest, User.class);
         UserProfile userProfile=mapper.map(userRequest.getUserProfileRequestDto(),UserProfile.class);
+
+        userProfile.setTechs(validTechs);
+        userProfile.setDomain(validDomains);
+
         List<Integer> collect = userRequest.getRoleDtoList().stream().map(singleRole -> {
             return singleRole.getRoleId();
         }).collect(Collectors.toList());

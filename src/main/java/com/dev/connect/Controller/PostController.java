@@ -68,18 +68,8 @@ public class PostController {
     }
 
     //search for specific tags
-//    @GetMapping("/search")
-//    public ResponseEntity<List<PostResponse>> searchPostBySpecificTags(@RequestParam List<String> tags){
-//        return ResponseEntity.ok(postService.searchPostBySpecificTags(tags));
-//    }
-//
-//    @GetMapping("/search")
-//    public ResponseEntity<List<PostResponse>> searchPostByType(@RequestParam String type){
-//       return ResponseEntity.ok(postService.searchPostByType(type));
-//    }
-
     @GetMapping("/search")
-    public ResponseEntity<List<PostResponse>> searchPostByTypeAndTags(
+    public ResponseEntity<List<PostResponse>> searchPostByTypeOrTagsOrTypeAndTags(
             @RequestParam(required = false) String type,
             @RequestParam(required = false) List<String> tags
     ){

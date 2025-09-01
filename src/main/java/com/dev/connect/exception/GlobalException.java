@@ -1,8 +1,7 @@
 package com.dev.connect.exception;
 
 import com.dev.connect.apiResponse.ExceptionResponse;
-import com.dev.connect.entity.PostType;
-import org.hibernate.mapping.List;
+import com.dev.connect.enums.PostType;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -60,7 +57,16 @@ public class GlobalException {
         return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(WantsToGiveException.class)
+    public ResponseEntity<ExceptionResponse> WantsTOGiveExceptionHandler(WantsToGiveException ex){
+        ExceptionResponse response=ExceptionResponse.builder()
+                .message(ex.getMessage())
+                .status("not defined")
+                .datetime(LocalDateTime.now().toString())
+                .build();
 
+        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+    }
 
     // for handling enums
     //HttpMessageNotReadableException for enum coming via @requestBody
